@@ -159,6 +159,76 @@ public:
         return new javaFeatureDetector(fd);
     }
 
+    CV_WRAP static javaFeatureDetector* create( int detectorType, int features )
+    {
+        //String name;
+        if (detectorType > DYNAMICDETECTOR)
+        {
+            //name = "Dynamic";
+            detectorType -= DYNAMICDETECTOR;
+        }
+        if (detectorType > PYRAMIDDETECTOR)
+        {
+            //name = "Pyramid";
+            detectorType -= PYRAMIDDETECTOR;
+        }
+        if (detectorType > GRIDDETECTOR)
+        {
+            //name = "Grid";
+            detectorType -= GRIDDETECTOR;
+        }
+
+        Ptr<FeatureDetector> fd;
+        switch(detectorType)
+        {
+        case FAST:
+            fd = FastFeatureDetector::create();
+            break;
+        //case STAR:
+        //    fd = xfeatures2d::StarDetector::create();
+        //    break;
+        //case SIFT:
+        //    name = name + "SIFT";
+        //    break;
+        //case SURF:
+        //    name = name + "SURF";
+        //    break;
+        case ORB:
+            fd = ORB::create(features);
+            break;
+        case MSER:
+            fd = MSER::create();
+            break;
+        case GFTT:
+            fd = GFTTDetector::create();
+            break;
+        case HARRIS:
+            {
+            Ptr<GFTTDetector> gftt = GFTTDetector::create();
+            gftt->setHarrisDetector(true);
+            fd = gftt;
+            }
+            break;
+        case SIMPLEBLOB:
+            fd = SimpleBlobDetector::create();
+            break;
+        //case DENSE:
+        //    name = name + "Dense";
+        //    break;
+        case BRISK:
+            fd = BRISK::create();
+            break;
+        case AKAZE:
+            fd = AKAZE::create();
+            break;
+        default:
+            CV_Error( Error::StsBadArg, "Specified feature detector type is not supported." );
+            break;
+        }
+
+        return new javaFeatureDetector(fd);
+    }
+
     CV_WRAP void write( const String& fileName ) const
     {
         FileStorage fs(fileName, FileStorage::WRITE);
